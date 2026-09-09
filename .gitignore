@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# 运行数据与敏感配置（含明文授权码/API Key，绝不能提交）
+config.yaml
+config_clean.yaml
+config.local.yaml
+config.yaml.bak_*
+config*.bak*
+state.json
+todos.json
+recent.json
+*.lock
+.env
+
+# 本地部署的 Vikunja（含数据库与账号凭据）
+vikunja_local/
+
+# 日志
+logs/
+*.log
+
+# 其它
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+# 测试/冒烟/临时产物
+_smoke*.txt
+_test_result.log
+_test_out*.txt
+_tr*.txt
+_probe*.txt
+*.tmp
+
+# PyInstaller 构建产物
+build/
+dist/
+*.spec
