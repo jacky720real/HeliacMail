@@ -120,7 +120,7 @@ def _process_name(pid: int) -> str:
     for ln in out.splitlines():
         ln = ln.strip()
         if ln:
-            return ln.split('\",\"')[0].lstrip('\"').strip()
+            return ln.split('","')[0].lstrip('"').strip()
     return ""
 
 
