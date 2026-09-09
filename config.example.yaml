@@ -1,0 +1,54 @@
+# ============================================================
+# HeliacMail 配置示例
+# 复制为 config.yaml 后按需修改；程序首次运行也会自动生成默认配置。
+# ============================================================
+
+server:
+  host: 127.0.0.1
+  port: 8090
+  # 访问令牌（可选）：留空则仅限本机访问；填了之后所有 /api/* 请求需带 X-Auth-Token 头
+  auth_token: ""
+
+monitor:
+  poll_interval: 30        # 轮询间隔（秒）
+  max_per_run: 20          # 每轮每账户最多处理邮件数
+  mark_seen: false         # 是否把处理过的邮件标记为已读
+  use_idle: true           # 支持时使用 IMAP IDLE 长连接（更快收到新邮件）
+  idle_timeout: 300        # IDLE 最长挂起秒数
+  lookback_days: 30        # 首次接入往回扫描的天数（0=不限）
+  accounts: []             # 邮箱账户在网页中添加，不会写在这里
+
+ai:
+  enabled: false
+  timeout: 120
+  language: 中文
+  preferences: ""          # 给 AI 的个性化偏好说明（如：我是学生，关注作业与社团通知）
+  weights: {}              # 分类权重（1-5），留空用默认
+  providers: []            # 在网页设置中配置 OpenAI 兼容 provider
+
+notify:
+  ntfy:
+    server: https://ntfy.sh
+    topic: ""              # 手机推送主题，填了才推送
+  priority_urgent: 5       # 紧急邮件的 ntfy 优先级
+  skip_categories: []      # 不推送的分类
+  sync_todos: true         # 待办有变化时推送到手机
+  first_batch_quiet: true  # 首次接入的历史邮件不逐条推送
+
+sync:
+  enabled: false
+  backend: vikunja
+  vikunja:
+    url: ""
+    token: ""
+    username: ""
+    password: ""
+    project_id: ""
+    project_title: 邮箱待办
+    priority_high: 5
+    priority_med: 3
+    priority_low: 1
+    adopt_remote: true     # 同步时是否把远端已有任务纳入本地清单
+
+todo:
+  keywords: ["待办", "需要", "请", "务必", "记得"]
