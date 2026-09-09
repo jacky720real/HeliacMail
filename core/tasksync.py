@@ -290,3 +290,4 @@ def delete_local(cfg: dict, todos_path: str, tid: str, log=None) -> str:
             log(f"[同步] 远端删除失败: {e}")
     todos_mod.remove(todos_path, tid)
     return ""
+

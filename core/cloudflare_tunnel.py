@@ -234,3 +234,4 @@ def status(base_dir: str) -> dict:
         "deploy_ok": LAST["ok"],
         "deploy_error": LAST["msg"],
     }
+
