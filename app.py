@@ -810,7 +810,7 @@ def main() -> None:
     except (KeyboardInterrupt, SystemExit):
         print("\n程序已停止。")
         monitor.stop()
-        # 先停掉本工具拉起的 Vikunja 子进程，避免关窗后留下孤儿进程占住控制台/端口
+        # 先停掉本工具拉起的 Vikunja 子进程，避免关窗后留下孤儿进程占住控制台/窗口
         vk_mod.stop_if_owned(BASE_DIR)
         try:
             httpd.shutdown()
@@ -822,3 +822,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
