@@ -5,7 +5,7 @@
 - **AI 智能分析**（可选用）：多 provider（OpenAI 兼容协议，可接 DeepSeek / OpenAI / Kimi / 通义 / GLM / Gemini 官方兼容端点 / Ollama 本地），输出 **分类 · 紧急度 · 摘要 · 关键点 · 待办 · 验证码 · 行动链接**，失败自动降级到下一个；
 - **关键词待办**（始终保留，AI 关闭或不可用时兜底）：按 `TODO/待办/task…` 关键词提取待办。
 
-并通过 **ntfy 免费推送** 把新邮件摘要与待办清单发到手机（借鉴 mailpilot）。
+并通过 **ntfy 免费推送** 把新邮件摘要与待办清单发到手机。
 
 ## 🚀 快速开始
 
@@ -136,9 +136,3 @@ sync:                       # 待办同步到真任务软件（Vikunja）
 **那 Cloudflare 是不是更好？** 它赢在**手机完全不用装任何东西**：cloudflared 从你电脑**出站**连到 Cloudflare 边缘，路由器/防火墙不开放任何入站端口，传输全程 TLS——比 cpolar / ngrok / 端口映射都更稳更安全。代价是你的 Vikunja 由“私有”变为“公网可达”，安全主要靠 Vikunja 登录密码；想更保险可在 Cloudflare 控制台加免费 **Zero Trust Access**，只允许你自己的邮箱访问。结论：个人用，**图省心选 Tailscale，图手机免装 VPN 选 Cloudflare**，两者都是安全的好选择。本工具设置页已支持：连接方式选 **Cloudflare Tunnel** → 点 **☁️ 一键安装并启动隧道**，自动下载 cloudflared、取得 https 地址并写入 Vikunja publicurl（免费 quick tunnel 地址重启会变，固定请用命名隧道+自有域名）。
 
 **Tailscale 一直不成功的常见原因**：① 电脑 Win 防火墙默认拦 3456/41641 → 放行；② 手机与电脑必须登录**同一 Tailscale 账号**；③ 手机用移动流量而非与电脑相同的 Wi-Fi（两台都在同一 Wi-Fi 时 Tailscale 也可能走局域网路径但一样通）；④ 先用手机浏览器打开 `http://100.x:3456` 验证再配 App；⑤ 若公司网/代理拦截 UDP，可开 MagicDNS 或改走 DERP 中继。设置页会自动检测本机 100.x 并在「📶 手机怎么连」里提示。
-
-## 与原版(mailpilot)的关系
-
-本工具保留了“浏览器配置、多中文邮箱、关键词待办”等本地化轻量能力，并吸收 mailpilot 的
-多 LLM provider 降级、结构化摘要、注入防护、水位线去重、按分类分级推送、只读不丢信等设计。
-差异：mailpilot 是单账户 + IMAP IDLE 常驻的 Go 二进制；本工具是多账户轮询 + Windows 一键运行的 Python 工具。
