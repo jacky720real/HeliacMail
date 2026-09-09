@@ -354,4 +354,3 @@ def quick_test(ai_cfg: dict, log=None) -> Tuple[bool, str]:
     return True, a.to_dict()
 
 
-
