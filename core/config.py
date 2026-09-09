@@ -281,3 +281,4 @@ def ensure_config_file(path: str) -> Dict:
     cfg = coerce(None)
     save_config(cfg, path)
     return cfg
+
