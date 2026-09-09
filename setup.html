@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HeliacMail · 设置</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161a22; --panel2:#1b202b; --line:#2a3140;
+  --txt:#e8eaf0; --dim:#9aa3b5; --accent:#4f8cff; --green:#34d399; --red:#f87171;
+  --amber:#fbbf24; --mono:'Cascadia Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,'Segoe UI','Microsoft YaHei',sans-serif;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+.hidden{display:none!important}
+/* 顶栏 */
+.topbar{display:flex;align-items:center;gap:14px;padding:14px 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.topbar .logo{font-size:18px;font-weight:700}
+.topbar .logo b{color:var(--accent)}
+.topbar .spacer{flex:1}
+.topbar .link{font-size:13px;color:var(--dim);padding:6px 12px;border:1px solid var(--line);border-radius:8px;transition:.15s}
+.topbar .link:hover{color:var(--txt);border-color:var(--accent)}
+/* 布局 */
+.wrap{max-width:1080px;margin:0 auto;padding:20px 22px 40px}
+.section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.section h2{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section h2 .emo{font-size:16px}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.row label{min-width:110px;font-size:13px;color:var(--dim)}
+.row input[type=text],.row input[type=password],.row input[type=number],.row select{
+  flex:1;min-width:200px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+  padding:9px 12px;border-radius:8px;font-size:13px;outline:none}
+.row input:focus{border-color:var(--accent)}
+.btn{background:var(--accent);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:13px;cursor:pointer;transition:.15s}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
+.btn.ghost:hover{color:var(--txt);border-color:var(--accent)}
+.btn.danger{background:transparent;border:1px solid var(--red);color:var(--red)}
+.btn.danger:hover{background:rgba(248,113,113,.1)}
+.btn.small{padding:5px 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel2);
+  border:1px solid var(--line);padding:10px 20px;border-radius:10px;font-size:13px;z-index:99;
+  opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+/* 账户卡片 */
+.acc{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.acc .info{flex:1;min-width:0}
+.acc .email{font-size:14px;font-weight:600}
+.acc .meta{font-size:12px;color:var(--dim);margin-top:3px}
+.acc .rm{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:4px 8px;border-radius:6px}
+.acc .rm:hover{color:var(--red);background:rgba(248,113,113,.1)}
+/* 分类权重 */
+.weights{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.witem{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.witem .wname{font-size:13px;margin-bottom:6px}
+.witem select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:5px 8px;border-radius:6px;font-size:12px}
+/* provider 卡片 */
+.prov{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px}
+.prov .head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.prov .head input[type=text]{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:8px 10px;border-radius:6px;font-size:13px;outline:none}
+.prov .head input:focus{border-color:var(--accent)}
+.prov .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prov .grid2 input,.prov .grid2 select{background:var(--panel);border:1px solid var(--line);color:var(--txt);padding:8px 10px;border-radius:6px;font-size:13px;outline:none;width:100%}
+.prov .grid2 input:focus,.prov .grid2 select:focus{border-color:var(--accent)}
+.prov .foot{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:12px;color:var(--dim)}
+.prov .foot label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.prov .rm{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:4px 8px;border-radius:6px;margin-left:auto}
+.prov .rm:hover{color:var(--red)}
+.tip{font-size:12px;color:var(--dim);line-height:1.7;margin-top:4px}
+.code{font-family:var(--mono);background:var(--panel2);padding:2px 6px;border-radius:4px;font-size:12px}
+.grid2col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){.grid2col{grid-template-columns:1fr}}
+.status-badge{font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--dim)}
+.status-badge.on{color:var(--green);border-color:var(--green)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">📧 <b>HeliacMail</b> · 设置</div>
+  <div class="spacer"></div>
+  <a class="link" href="/dashboard">📊 仪表盘</a>
+</div>
+<div class="wrap">
+
+  <!-- 邮箱账户 -->
+  <div class="section">
+    <h2><span class="emo">📮</span> 邮箱账户</h2>
+    <div id="accs"></div>
+    <div class="row">
+      <label>邮箱地址</label>
+      <input type="text" id="email" placeholder="you@qq.com / you@163.com / you@gmail.com">
+    </div>
+    <div class="row">
+      <label>授权码/密码</label>
+      <input type="password" id="pwd" placeholder="QQ/163 邮箱请用『授权码』，不是登录密码">
+    </div>
+    <div class="row">
+      <label>轮询间隔</label>
+      <input type="number" id="interval" value="30" min="10" style="max-width:140px">
+      <span class="tip">秒，最小 10s</span>
+    </div>
+    <div class="row">
+      <button class="btn" onclick="saveAcc()">添加/更新账户</button>
+    </div>
+    <div class="tip">📌 QQ/163 邮箱需要在网页端开启 IMAP 并生成授权码；Gmail 需开启两步验证后生成应用专用密码。IMAP 服务器会自动识别常见邮箱，也可到下方“高级设置”手动指定。</div>
+  </div>
+
+  <!-- 监控设置 -->
+  <div class="section">
+    <h2><span class="emo">🔄</span> 监控设置</h2>
+    <div class="row"><label>轮询间隔</label><input type="number" id="m-poll" value="30" min="10"><span class="tip">秒</span></div>
+    <div class="row"><label>每轮上限</label><input type="number" id="m-max" value="20" min="1"><span class="tip">每账户每轮处理邮件数</span></div>
+    <div class="row"><label>回看天数</label><input type="number" id="m-lookback" value="30" min="0"><span class="tip">0=不限，仅首次接入生效</span></div>
+    <div class="row"><label>标记已读</label><select id="m-seen"><option value="false">否（保持未读）</option><option value="true">是（处理过的邮件标为已读）</option></select></div>
+    <div class="row"><label>IMAP IDLE</label><select id="m-idle"><option value="true">开（更快收到新邮件）</option><option value="false">关（仅定时轮询）</option></select></div>
+    <div class="row"><button class="btn" onclick="saveMonitor()">保存监控设置</button></div>
+  </div>
+
+  <!-- AI 分析 -->
+  <div class="section">
+    <h2><span class="emo">🤖</span> AI 分析（可选，不配也能用关键词模式）</h2>
+    <div class="row">
+      <label>启用 AI</label>
+      <select id="ai-enabled"><option value="false">关</option><option value="true">开</option></select>
+    </div>
+    <div class="row"><label>回复语言</label><input type="text" id="ai-language" value="中文"></div>
+    <div class="row"><label>偏好说明</label><input type="text" id="ai-preferences" placeholder="例如：我是学生，关注作业截止日期和社团通知"></div>
+    <div class="row"><label>超时(秒)</label><input type="number" id="ai-timeout" value="120" min="10"></div>
+    <div id="provs"></div>
+    <div class="row"><button class="btn ghost small" onclick="addProv()">+ 添加 provider</button></div>
+    <div class="row"><button class="btn" onclick="saveAi()">保存 AI 设置</button> <button class="btn ghost" onclick="testAi()">测试 AI</button></div>
+    <div class="tip">支持任意 OpenAI 兼容接口：DeepSeek、Kimi、通义、GLM、OpenAI 等。填 Base URL + Model + API Key 即可，多 provider 会自动降级（第一个失败换下一个）。</div>
+  </div>
+
+  <!-- 分类权重 -->
+  <div class="section">
+    <h2><span class="emo">⚖️</span> 分类权重（1-5，决定邮件优先级）</h2>
+    <div class="weights" id="weights"></div>
+    <div class="row" style="margin-top:12px"><button class="btn" onclick="saveWeights()">保存权重</button></div>
+  </div>
+
+  <!-- ntfy 推送 -->
+  <div class="section">
+    <h2><span class="emo">📱</span> ntfy 手机推送</h2>
+    <div class="row"><label>服务器</label><input type="text" id="ntfy-server" value="https://ntfy.sh"></div>
+    <div class="row"><label>主题</label><input type="text" id="ntfy-topic" placeholder="填一个只有你知道的字符串，如 mymail-9f3k2"></div>
+    <div class="row"><label>紧急优先级</label><select id="ntfy-priority"><option value="5">5 最高</option><option value="4">4 高</option><option value="3">3 默认</option><option value="2">2 低</option></select></div>
+    <div class="row"><label>跳过分类</label><input type="text" id="ntfy-skip" placeholder="promo,news（逗号分隔）"></div>
+    <div class="row"><label>待办推送</label><select id="ntfy-synctodos"><option value="true">开（待办变化时推送）</option><option value="false">关</option></select></div>
+    <div class="row"><label>首轮静默</label><select id="ntfy-firstquiet"><option value="true">开（首次接入历史邮件不推送）</option><option value="false">关</option></select></div>
+    <div class="row"><button class="btn" onclick="saveNotify()">保存推送设置</button> <button class="btn ghost" onclick="testNotify()">发送测试推送</button></div>
+    <div class="tip">手机安装 ntfy 应用（Android/iOS），订阅同一主题即可收到推送。无需注册账号。</div>
+  </div>
+
+  <!-- 待办关键词 -->
+  <div class="section">
+    <h2><span class="emo">🏷️</span> 待办关键词（AI 关闭时按关键词提取）</h2>
+    <div class="row"><label>关键词</label><input type="text" id="todo-kw" placeholder="待办,需要,请,务必,记得"></div>
+    <div class="row"><button class="btn" onclick="saveTodo()">保存关键词</button></div>
+  </div>
+
+  <!-- 同步 -->
+  <div class="section">
+    <h2><span class="emo">🔗</span> 待办同步（Vikunja / ntfy）</h2>
+    <div class="row"><label>启用同步</label><select id="sync-enabled"><option value="false">关</option><option value="true">开</option></select></div>
+    <div class="row"><label>后端</label><select id="sync-backend"><option value="vikunja">Vikunja（自托管待办）</option></select></div>
+    <div id="vk-fields">
+      <div class="row"><label>服务器地址</label><input type="text" id="vk-url" placeholder="http://127.0.0.1:3456 或 https://vikunja.example.com"></div>
+      <div class="row"><label>API Token</label><input type="password" id="vk-token" placeholder="留空保留原值"></div>
+      <div class="row"><label>用户名</label><input type="text" id="vk-user"></div>
+      <div class="row"><label>密码</label><input type="password" id="vk-pass"></div>
+      <div class="row"><label>项目</label><input type="text" id="vk-project" placeholder="留空自动创建『邮箱待办』项目"></div>
+    </div>
+    <div class="row"><button class="btn" onclick="saveSync()">保存同步设置</button> <button class="btn ghost" onclick="testSync()">测试连接</button> <button class="btn ghost" onclick="syncNow()">立即同步</button></div>
+    <div class="tip">Vikunja 可本地一键部署（见“本地 Vikunja”），也可用已有的远程实例。勾选同步后，邮件待办会与 Vikunja 双向同步。</div>
+  </div>
+
+  <!-- 本地 Vikunja -->
+  <div class="section">
+    <h2><span class="emo">🗂️</span> 本地 Vikunja（可选，一键部署）</h2>
+    <div class="row"><span class="status-badge" id="vk-status">检测中…</span></div>
+    <div class="row"><button class="btn" onclick="deployVk()">一键部署本地 Vikunja</button> <button class="btn ghost" onclick="refreshVkStatus()">刷新状态</button></div>
+    <div class="tip">自动下载 vikunja.exe 并启动（默认端口 3456）。首次约 40MB。若 3456 被占用可在下方结束占用进程。</div>
+    <div id="vk-detail" class="tip" style="margin-top:8px"></div>
+  </div>
+
+  <!-- Cloudflare 隧道 -->
+  <div class="section">
+    <h2><span class="emo">☁️</span> Cloudflare 隧道（可选，公网访问）</h2>
+    <div class="row"><span class="status-badge" id="cf-status">检测中…</span></div>
+    <div class="row"><button class="btn" onclick="deployCf()">一键启动隧道</button> <button class="btn ghost" onclick="stopCf()">停止隧道</button></div>
+    <div class="tip">无需域名即可获得 https 公网地址，手机在外网也能访问/收推送。首次自动下载 cloudflared（约 60MB）。</div>
+    <div id="cf-detail" class="tip" style="margin-top:8px"></div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let toastTimer=null;
+function toast(msg,ok=true){const t=$('#toast');t.textContent=msg;t.className='toast show '+(ok?'ok':'err');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className='toast',2600);}
+async function api(path,opt){const r=await fetch(path,opt);let j;try{j=await r.json();}catch(e){j={success:false,error:'响应解析失败'};}
+  if(!r.ok&&!j.success){throw new Error(j.error||('HTTP '+r.status));}return j;}
+const CAT_NAMES={urgent:'紧急',important:'重要',normal:'普通',news:'资讯',social:'社交',promo:'促销',finance:'财务',other:'其他'};
+
+/* ---- 账户 ---- */
+async function loadAccs(){
+  const j=await api('/api/accounts');
+  $('#accs').innerHTML=j.accounts.length?j.accounts.map(a=>`
+    <div class="acc">
+      <div class="info"><div class="email">${esc(a.email)}</div>
+      <div class="meta">IMAP: ${esc(a.imap_host)}</div></div>
+      <button class="rm" onclick="rmAcc('${esc(a.email)}')">✕</button>
+    </div>`).join('')
+    :'<div class="tip" style="margin-bottom:10px">还没有账户，添加第一个吧。</div>';
+}
+async function saveAcc(){
+  const email=$('#email').value.trim();const pwd=$('#pwd').value;const interval=parseInt($('#interval').value)||30;
+  if(!email){toast('请填写邮箱地址',false);return;}
+  try{const j=await api('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd,poll_interval:interval})});
+    toast(j.message||'已保存');$('#pwd').value='';loadAccs();loadStatus();}
+  catch(e){toast(e.message,false);}
+}
+async function rmAcc(email){
+  if(!confirm('删除账户 '+email+' ？'))return;
+  try{await api('/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});toast('已删除');loadAccs();loadStatus();}
+  catch(e){toast(e.message,false);}
+}
+
+/* ---- 监控 ---- */
+async function saveMonitor(){
+  try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({monitor:{
+    poll_interval:parseInt($('#m-poll').value)||30,
+    max_per_run:parseInt($('#m-max').value)||20,
+    mark_seen:$('#m-seen').value==='true',
+    use_idle:$('#m-idle').value==='true',
+    lookback_days:parseInt($('#m-lookback').value)||30,
+  }})});toast('监控设置已保存');loadStatus();}
+  catch(e){toast(e.message,false);}
+}
+
+/* ---- AI ---- */
+function provHtml(p,i){
+  return `<div class="prov">
+    <div class="head"><input type="text" data-f="name" value="${esc(p.name)}" placeholder="名称，如 DeepSeek">
+      <select data-f="type">
+        <option value="openai" ${p.type==='openai'?'selected':''}>OpenAI 兼容</option>
+        <option value="deepseek" ${p.type==='deepseek'?'selected':''}>DeepSeek</option>
+        <option value="moonshot" ${p.type==='moonshot'?'selected':''}>Kimi(Moonshot)</option>
+      </select>
+      <button class="rm" onclick="rmProv(${i})">✕</button></div>
+    <div class="grid2">
+      <input type="text" data-f="base_url" value="${esc(p.base_url)}" placeholder="Base URL，如 https://api.deepseek.com/v1">
+      <input type="text" data-f="model" value="${esc(p.model)}" placeholder="Model，如 deepseek-chat">
+      <input type="password" data-f="api_key" value="" placeholder="${p.has_key?'已配置（留空保留）':'API Key'}">
+      <label class="tip" style="display:flex;align-items:center;gap:5px"><input type="checkbox" data-f="vision" ${p.vision?'checked':''}> 支持图片理解</label>
+    </div>
+  </div>`;
+}
+async function loadAi(){
+  const j=await api('/api/settings');const s=j.settings;
+  $('#ai-enabled').value=String(s.ai.enabled);
+  $('#ai-language').value=s.ai.language||'中文';
+  $('#ai-preferences').value=s.ai.preferences||'';
+  $('#ai-timeout').value=s.ai.timeout||120;
+  renderProvs(s.ai.providers||[]);
+}
+let provs=[];
+function renderProvs(list){provs=list.map(p=>({...p}));
+  $('#provs').innerHTML=provs.map(provHtml).join('')||'<div class="tip">还没有 provider，添加一个即可启用 AI 分析。</div>';}
+function addProv(){provs.push({name:'',type:'openai',base_url:'',model:'',api_key:'',vision:false,has_key:false});renderProvs(provs);}
+function rmProv(i){provs.splice(i,1);renderProvs(provs);}
+function collectProvs(){
+  return [...document.querySelectorAll('.prov')].map((el,i)=>({
+    name:(el.querySelector('[data-f=name]').value||'').trim(),
+    type:el.querySelector('[data-f=type]').value,
+    base_url:(el.querySelector('[data-f=base_url]').value||'').trim(),
+    model:(el.querySelector('[data-f=model]').value||'').trim(),
+    api_key:el.querySelector('[data-f=api_key]').value,
+    vision:el.querySelector('[data-f=vision]').checked,
+    clear_key:false,
+  }));
+}
+async function saveAi(){
+  try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ai:{
+    enabled:$('#ai-enabled').value==='true',
+    language:$('#ai-language').value.trim()||'中文',
+    preferences:$('#ai-preferences').value.trim(),
+    timeout:parseInt($('#ai-timeout').value)||120,
+    providers:collectProvs(),
+  }})});toast('AI 设置已保存');loadStatus();}
+  catch(e){toast(e.message,false);}
+}
+async function testAi(){
+  try{const j=await api('/api/ai/test',{method:'POST'});toast(j.message||'测试成功');console.log(j.analysis);}
+  catch(e){toast(e.message,false);}
+}
+
+/* ---- 权重 ---- */
+const DEF_W={urgent:5,important:4,normal:3,news:2,social:2,promo:1,finance:4,other:2};
+async function loadWeights(){
+  const j=await api('/api/settings');const w=Object.assign({},DEF_W,j.settings.ai.weights||{});
+  $('#weights').innerHTML=Object.entries(w).map(([k,v])=>`
+    <div class="witem"><div class="wname">${CAT_NAMES[k]||k}</div>
+    <select data-w="${k}">${[1,2,3,4,5].map(n=>`<option value="${n}" ${n===v?'selected':''}>${n}</option>`).join('')}</select></div>`).join('');
+}
+async function saveWeights(){
+  const w={};
+  document.querySelectorAll('[data-w]').forEach(el=>w[el.dataset.w]=parseInt(el.value));
+  try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ai:{weights:w}})});toast('权重已保存');}
+  catch(e){toast(e.message,false);}
+}
+
+/* ---- ntfy ---- */
+async function loadNotify(){
+  const j=await api('/api/settings');const n=j.settings.notify;
+  $('#ntfy-server').value=n.ntfy.server||'https://ntfy.sh';
+  $('#ntfy-topic').value=n.ntfy.topic||'';
+  $('#ntfy-priority').value=String(n.priority_urgent||5);
+  $('#ntfy-skip').value=(n.skip_categories||[]).join(',');
+  $('#ntfy-synctodos').value=String(n.sync_todos);
+  $('#ntfy-firstquiet').value=String(n.first_batch_quiet);
+}
+async function saveNotify(){
+  try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({notify:{
+    ntfy:{server:$('#ntfy-server').value.trim()||'https://ntfy.sh',topic:$('#ntfy-topic').value.trim()},
+    priority_urgent:parseInt($('#ntfy-priority').value)||5,
+    skip_categories:$('#ntfy-skip').value.split(',').map(s=>s.trim()).filter(Boolean),
+    sync_todos:$('#ntfy-synctodos').value==='true',
+    first_batch_quiet:$('#ntfy-firstquiet').value==='true',
+  }})});toast('推送设置已保存');loadStatus();}
+  catch(e){toast(e.message,false);}
+}
+async function testNotify(){try{const j=await api('/api/notify/test',{method:'POST'});toast(j.message||'已发送');}catch(e){toast(e.message,false);}}
+
+/* ---- 关键词 ---- */
+async function loadTodo(){
+  const j=await api('/api/settings');
+  $('#todo-kw').value=(j.settings.todo.keywords||[]).join(',');
+}
+async function saveTodo(){
+  try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({todo:{keywords:$('#todo-kw').value.split(',').map(s=>s.trim()).filter(Boolean)}})});toast('关键词已保存');}
+  catch(e){toast(e.message,false);}
+}
+
+/* ---- 同步 ---- */
+async function loadSync(){
+  const j=await api('/api/settings');const s=j.settings.sync;
+  $('#sync-enabled').value=String(s.enabled);
+  $('#sync-backend').value=s.backend||'vikunja';
+  $('#vk-url').value=s.vikunja.url||'';
+  $('#vk-token').value='';
+  $('#vk-user').value=s.vikunja.username||'';
+  $('#vk-pass').value='';
+  $('#vk-project').value=s.vikunja.project_title||'';
+}
+async function saveSync(){
+  try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sync:{
+    enabled:$('#sync-enabled').value==='true',
+    backend:$('#sync-backend').value,
+    vikunja:{
+      url:$('#vk-url').value.trim(),
+      token:$('#vk-token').value,
+      username:$('#vk-user').value.trim(),
+      password:$('#vk-pass').value,
+      project_title:$('#vk-project').value.trim()||'邮箱待办',
+    },
+  }})});toast('同步设置已保存');loadStatus();}
+  catch(e){toast(e.message,false);}
+}
+async function testSync(){try{const j=await api('/api/sync/test',{method:'POST'});toast(j.message||'连接成功');}catch(e){toast(e.message,false);}}
+async function syncNow(){try{const j=await api('/api/todo/sync',{method:'POST'});toast(j.message||'已同步');}catch(e){toast(e.message,false);}}
+
+/* ---- Vikunja / CF 状态 ---- */
+async function refreshVkStatus(){
+  try{const j=await api('/api/vikunja/status');
+    const b=$('#vk-status');b.textContent=j.running?'本地 Vikunja 运行中':'未运行';
+    b.className='status-badge'+(j.running?' on':'');
+    $('#vk-detail').textContent=(j.pid?('PID '+j.pid+' · '):'')+(j.url?('地址 '+j.url):'')+(j.msg?(' · '+j.msg):'');
+  }catch(e){$('#vk-status').textContent='未知';}
+}
+async function refreshCfStatus(){
+  try{const j=await api('/api/cloudflare/status');
+    const b=$('#cf-status');b.textContent=j.running?'隧道运行中':'未运行';
+    b.className='status-badge'+(j.running?' on':'');
+    $('#cf-detail').textContent=(j.url?('地址 '+j.url):'')+(j.msg?(' · '+j.msg):'');
+  }catch(e){$('#cf-status').textContent='未知';}
+}
+async function deployVk(){try{const j=await api('/api/vikunja/deploy',{method:'POST'});toast(j.message||'开始部署');setTimeout(refreshVkStatus,3000);}catch(e){toast(e.message,false);}}
+async function deployCf(){try{const j=await api('/api/cloudflare/deploy',{method:'POST'});toast(j.message||'开始启动');setTimeout(refreshCfStatus,3000);}catch(e){toast(e.message,false);}}
+async function stopCf(){try{const j=await api('/api/cloudflare/stop',{method:'POST'});toast(j.message||'已停止');refreshCfStatus();}catch(e){toast(e.message,false);}}
+
+/* ---- 状态 ---- */
+async function loadStatus(){
+  try{const j=await api('/api/status');
+    if(j.errors&&j.errors.length)toast(j.errors.join('；'),false);
+  }catch(e){/* 忽略 */}
+}
+
+/* ---- init ---- */
+(async function init(){
+  await Promise.allSettled([loadAccs(),loadAi(),loadWeights(),loadNotify(),loadTodo(),loadSync(),refreshVkStatus(),refreshCfStatus()]);
+})();
+setInterval(()=>{refreshVkStatus();refreshCfStatus();},10000);
+</script>
+</body>
+</html>
