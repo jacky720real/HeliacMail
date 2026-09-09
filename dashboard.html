@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HeliacMail · 仪表盘</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161a22; --panel2:#1b202b; --line:#2a3140;
+  --txt:#e8eaf0; --dim:#9aa3b5; --accent:#4f8cff; --green:#34d399; --red:#f87171;
+  --amber:#fbbf24; --mono:'Cascadia Code','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,'Segoe UI','Microsoft YaHei',sans-serif;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+.hidden{display:none!important}
+/* 顶栏 */
+.topbar{display:flex;align-items:center;gap:14px;padding:14px 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.topbar .logo{font-size:18px;font-weight:700}
+.topbar .logo b{color:var(--accent)}
+.topbar .spacer{flex:1}
+.topbar .link{font-size:13px;color:var(--dim);padding:6px 12px;border:1px solid var(--line);border-radius:8px;transition:.15s}
+.topbar .link:hover{color:var(--txt);border-color:var(--accent)}
+/* 统计卡 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:20px 22px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card .label{font-size:12px;color:var(--dim)}
+.card .value{font-size:28px;font-weight:700;margin-top:6px;font-family:var(--mono)}
+.card .sub{font-size:12px;color:var(--dim);margin-top:4px}
+/* 主网格 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 22px 30px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.panel h2{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);display:inline-block}
+.panel h2 .dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+/* 待办 */
+.todo-item{display:flex;align-items:flex-start;gap:10px;padding:10px 6px;border-bottom:1px solid var(--line)}
+.todo-item:last-child{border-bottom:none}
+.todo-item input[type=checkbox]{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.todo-item .body{flex:1;min-width:0}
+.todo-item .title{font-size:14px;word-break:break-word}
+.todo-item .meta{font-size:12px;color:var(--dim);margin-top:3px}
+.todo-item.done .title{text-decoration:line-through;color:var(--dim)}
+.todo-item .del{opacity:0;transition:.15s;color:var(--dim);background:none;border:none;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:6px}
+.todo-item:hover .del{opacity:1}
+.todo-item .del:hover{color:var(--red)}
+/* 最近邮件 */
+.mail-item{padding:10px 6px;border-bottom:1px solid var(--line)}
+.mail-item:last-child{border-bottom:none}
+.mail-item .subj{font-size:14px;word-break:break-word}
+.mail-item .subj .tag{font-size:11px;padding:2px 7px;border-radius:999px;margin-right:8px;vertical-align:1px}
+.mail-item .from{font-size:12px;color:var(--dim);margin-top:4px}
+.mail-item .sum{font-size:13px;color:var(--dim);margin-top:6px;line-height:1.5;border-left:2px solid var(--line);padding-left:10px}
+.tag-urgent{background:rgba(248,113,113,.15);color:var(--red)}
+.tag-important{background:rgba(251,191,36,.15);color:var(--amber)}
+.tag-normal{background:rgba(79,140,255,.15);color:var(--accent)}
+.tag-news{background:rgba(154,163,181,.15);color:var(--dim)}
+.tag-social{background:rgba(52,211,153,.15);color:var(--green)}
+.tag-promo{background:rgba(154,163,181,.15);color:var(--dim)}
+/* 状态条 */
+.statusline{display:flex;gap:10px;flex-wrap:wrap;padding:0 22px 6px;font-size:12px;color:var(--dim)}
+.statusline .err{color:var(--red)}
+.banner{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:var(--red);padding:10px 22px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">📧 <b>HeliacMail</b> · 仪表盘</div>
+  <div class="spacer"></div>
+  <a class="link" href="/setup">⚙ 设置</a>
+</div>
+<div id="banner" class="banner hidden"></div>
+<div class="statusline" id="statusline"></div>
+<div class="cards" id="cards"></div>
+<div class="grid">
+  <div class="panel">
+    <h2><span class="dot" id="dot-todo"></span> 待办清单 <span style="font-size:12px;color:var(--dim);font-weight:400">(点击勾选完成，自动同步)</span></h2>
+    <div id="todos"><p style="color:var(--dim);font-size:13px">加载中…</p></div>
+  </div>
+  <div class="panel">
+    <h2><span class="dot" id="dot-recent"></span> 最近邮件</h2>
+    <div id="recent"><p style="color:var(--dim);font-size:13px">加载中…</p></div>
+  </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const CAT_TAG={urgent:'tag-urgent',important:'tag-important',normal:'tag-normal',news:'tag-news',social:'tag-social',promo:'tag-promo',finance:'tag-important',other:'tag-normal'};
+const CAT_NAME={urgent:'紧急',important:'重要',normal:'普通',news:'资讯',social:'社交',promo:'促销',finance:'财务',other:'其他'};
+async function api(path,opt){const r=await fetch(path,opt);return r.json();}
+async function refresh(){
+  const [st,todos,recent]=await Promise.all([
+    api('/api/status'),api('/api/todos'),api('/api/recent')
+  ]);
+  // 状态行
+  const parts=[];
+  parts.push(`运行中：${st.running?'<b style="color:var(--green)">是</b>':'<b style="color:var(--red)">否</b>'}`);
+  parts.push(`账户：${st.account_count}`);
+  parts.push(`轮询间隔：${st.poll_interval}s`);
+  if(st.last_cycle)parts.push(`上次检查：${esc(st.last_cycle)}`);
+  if(st.ntfy_topic)parts.push(`推送主题：<b>${esc(st.ntfy_topic)}</b>`);
+  if(st.ai_enabled)parts.push(`AI：<b style="color:var(--green)">开</b>(${st.ai_providers})`);
+  if(st.sync_enabled)parts.push(`同步：${esc(st.sync_backend)}`);
+  $('#statusline').innerHTML=parts.join('&nbsp;·&nbsp;');
+  const banner=$('#banner');
+  if(st.errors&&st.errors.length){banner.textContent='⚠ '+st.errors.join('；');banner.classList.remove('hidden');}
+  else banner.classList.add('hidden');
+  // 统计卡
+  const open=todos.filter(t=>!t.done).length;
+  $('#cards').innerHTML=[
+    ['邮箱账户',st.account_count,''],
+    ['待办',open,'未完成'],
+    ['今日新邮件',recent.filter(i=>{const d=new Date(i.ts);const n=new Date();return d.toDateString()===n.toDateString();}).length,'今天'],
+    ['最近处理',recent.length,'条'],
+  ].map(([l,v,s])=>`<div class="card"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join('');
+  // 待办列表
+  $('#dot-todo').classList.toggle('on',open>0);
+  $('#todos').innerHTML=todos.length?todos.map(t=>`
+    <div class="todo-item ${t.done?'done':''}">
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggle('${esc(t.id)}')">
+      <div class="body">
+        <div class="title">${esc(t.title)}</div>
+        <div class="meta">${esc(t.category||'')}${t.mail_from?' · '+esc(t.mail_from):''}${t.ts?' · '+esc(t.ts):''}</div>
+      </div>
+      <button class="del" onclick="del('${esc(t.id)}')">✕</button>
+    </div>`).join('')
+    :'<p style="color:var(--dim);font-size:13px">暂无待办，有符合条件的邮件会自动生成。</p>';
+  // 最近邮件
+  $('#dot-recent').classList.add('on');
+  $('#recent').innerHTML=recent.length?recent.map(i=>`
+    <div class="mail-item">
+      <div class="subj"><span class="tag ${CAT_TAG[i.category]||'tag-normal'}">${CAT_NAME[i.category]||'其他'}</span>${esc(i.subject)}</div>
+      <div class="from">${esc(i.mail_from||'')} · ${esc(i.ts||'')}</div>
+      ${i.summary?`<div class="sum">${esc(i.summary)}</div>`:''}
+    </div>`).join('')
+    :'<p style="color:var(--dim);font-size:13px">暂无邮件记录。</p>';
+}
+async function toggle(id){await api('/api/todo/'+id+'/toggle',{method:'POST'});refresh();}
+async function del(id){await api('/api/todo/'+id+'/del',{method:'POST'});refresh();}
+refresh();
+setInterval(refresh,10000);
+</script>
+</body>
+</html>
