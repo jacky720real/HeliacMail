@@ -1,1 +1,4 @@
-# core package
+# -*- coding: utf-8 -*-
+"""
+多邮箱 AI 助手 — 核心包。
+"""

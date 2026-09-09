@@ -37,5 +37,5 @@ echo Web 界面: http://localhost:8090  （按 Ctrl+C 停止）
 echo.
 py app.py
 echo.
-echo 程序已退出.
+echo 程序已退出。
 pause
