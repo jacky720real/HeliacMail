@@ -1,54 +1,84 @@
-# ============================================================
-# HeliacMail 配置示例
-# 复制为 config.yaml 后按需修改；程序首次运行也会自动生成默认配置。
-# ============================================================
+# ===== HeliacMail · 多邮箱 AI 助手 配置示例 =====
+# 复制为 config.yaml 后填写。密码/API Key 建议写成 ${环境变量名}，
+# 例如 password: ${QQ_AUTH_CODE}，避免明文落盘。
 
 server:
-  host: 127.0.0.1
+  host: 127.0.0.1        # 127.0.0.1=仅本机访问；如需局域网访问改成 0.0.0.0
   port: 8090
-  # 访问令牌（可选）：留空则仅限本机访问；填了之后所有 /api/* 请求需带 X-Auth-Token 头
-  auth_token: ""
+  auth_token: ""         # 可选：访问令牌。host 非本机地址时强烈建议填写；配置后 /api/* 需带 X-Auth-Token 头
 
 monitor:
-  poll_interval: 30        # 轮询间隔（秒）
-  max_per_run: 20          # 每轮每账户最多处理邮件数
-  mark_seen: false         # 是否把处理过的邮件标记为已读
-  use_idle: true           # 支持时使用 IMAP IDLE 长连接（更快收到新邮件）
-  idle_timeout: 300        # IDLE 最长挂起秒数
-  lookback_days: 30        # 首次接入往回扫描的天数（0=不限）
-  accounts: []             # 邮箱账户在网页中添加，不会写在这里
+  poll_interval: 30        # 轮询间隔（秒），最小 10（不支持 IDLE 时的兜底）
+  max_per_run: 20          # 每账户每轮最多处理的邮件数
+  mark_seen: false         # 处理成功后是否在邮箱里标记为已读（false=只读更安全）
+  use_idle: true           # 启用 IMAP IDLE 秒级实时（邮箱不支持时自动退回轮询）
+  idle_timeout: 300        # IDLE 静默多久兜底扫一次（秒）
+  lookback_days: 30        # 新账户首次只读取最近 N 天内的邮件（避免把多年老邮件翻出来生成待办）
+                           # 0 = 不限；日常监控仍实时处理之后的新邮件
+  accounts:
+    - email: "you@qq.com"
+      password: ${QQ_AUTH_CODE}     # QQ/163/Gmail 请填“授权码/应用专用密码”
+      imap_host: ""                 # 留空自动识别
+      imap_port: 993
+
+todo:
+  keywords: [TODO, 待办, task, action item, 需要处理]
 
 ai:
   enabled: false
-  timeout: 120
-  language: 中文
-  preferences: ""          # 给 AI 的个性化偏好说明（如：我是学生，关注作业与社团通知）
-  weights: {}              # 分类权重（1-5），留空用默认
-  providers: []            # 在网页设置中配置 OpenAI 兼容 provider
+  timeout: 120             # 单封邮件分析超时（秒）
+  language: 中文           # 摘要/要点输出语言；auto=随邮件语言
+  # preferences: ""        # 告诉 AI“什么对你更重要”的自由说明（设置页 ⑤ 也可编辑），如：
+  #   preferences: "我在准备考研；验证码要第一时间提醒；物流/广告不要生成待办"
+  # weights: {}            # 类别关注权重 1-5（3=默认），例如：
+  #   weights: {"工作":5,"验证码":5,"营销推广":1}
+  providers:
+    - name: deepseek
+      type: openai         # openai=OpenAI 兼容协议（含 DeepSeek/Kimi/通义/GLM/Gemini 官方兼容端点）
+      base_url: https://api.deepseek.com/v1
+      model: deepseek-chat
+      api_key: ${DEEPSEEK_API_KEY}
+    # - name: ollama        # 本地模型，零成本隐私优先
+    #   type: openai
+    #   base_url: http://127.0.0.1:11434/v1
+    #   model: qwen2.5:7b
+    #   api_key: ""
+    # - name: gemini
+    #   type: openai
+    #   base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    #   model: gemini-2.0-flash
+    #   api_key: ${GEMINI_API_KEY}
 
 notify:
   ntfy:
     server: https://ntfy.sh
-    topic: ""              # 手机推送主题，填了才推送
-  priority_urgent: 5       # 紧急邮件的 ntfy 优先级
-  skip_categories: []      # 不推送的分类
-  sync_todos: true         # 待办有变化时推送到手机
-  first_batch_quiet: true  # 首次接入的历史邮件不逐条推送
+    topic: ""              # 填写后在 ntfy 里订阅该主题即可在手机上收到推送
+    priority_urgent: 5     # 紧急邮件的 ntfy priority
+  skip_categories: [垃圾, 营销推广]   # 这些分类只记待办/简报，不推送到手机
+  first_batch_quiet: true   # 首轮/存量邮件不逐封推送（只进简报与待办，避免“一来一大堆”）；新邮件照常推送
 
+# ===== 待办同步到"真正的任务软件"（手机可勾选完成） =====
+# 推荐 Vikunja（开源自托管）：docker run -p 3456:80 -v ./vikunja:/app/vikunja kolaente/vikunja
+# 手动新建令牌(v2.6)：登录网页 → 设置(Settings) → API Tokens → 新建：填名称 →
+#   勾选 API 范围(建议全选) → 设过期时间(留空=永不过期) → 复制 tk_ 开头令牌填到下面。
+# 更省事：在本项目设置页点【⚡ 一键部署本地 Vikunja】会自动创建并写入永久 token。
+# 本项目会按 project_title 自动在 Vikunja 创建项目，并把"邮箱生成的待办"建进去；
+# 手机装 Vikunja App 登录同一服务器即可查看，勾选完成后自动同步回本地仪表板。
 sync:
-  enabled: false
-  backend: vikunja
+  enabled: true
+  backend: vikunja          # vikunja（其余：todoist / ms_todo 规划中）
   vikunja:
-    url: ""
-    token: ""
-    username: ""
-    password: ""
-    project_id: ""
+    url: ""                 # 例: http://192.168.1.10:3456 （电脑/服务器需手机能访问）
+    token: ""               # tk_xxxx（Settings > API Tokens 生成；一键部署自动填）
+    username: ""            # 网页/手机登录账号；留空=默认 vikunja_admin（部署时自动随机生成密码，见 vikunja_local/admin.txt）
+    password: ""            # 登录密码(≥8位)；留空=沿用已有或自动生成(见 vikunja_local/admin.txt)
+    project_id: ""          # 留空=按下面标题自动查找/创建
     project_title: 邮箱待办
-    priority_high: 5
+    priority_high: 5        # 紧急待办的 Vikunja 优先级(1-5，数字越大越高)
     priority_med: 3
     priority_low: 1
-    adopt_remote: true     # 同步时是否把远端已有任务纳入本地清单
+    adopt_remote: true      # 手机上手动新增的任务也同步回本地仪表板
 
-todo:
-  keywords: ["待办", "需要", "请", "务必", "记得"]
+logging:
+  level: INFO
+  backup_count: 5
