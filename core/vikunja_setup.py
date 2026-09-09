@@ -1068,3 +1068,14 @@ def auto_start_local(cfg: dict, base_dir: str, log) -> bool:
     except Exception as e:
         log(f"[Vikunja] 自动启动异常：{e}")
         return False
+
+
+
+
+# （旧 status 重复定义已移除；生效的是上方带 configured 字段的 status）
+
+
+# （旧版“注册 API”自动建号流程已废弃，实际使用上面基于 CLI 的 deploy 实现）
+
+
+
