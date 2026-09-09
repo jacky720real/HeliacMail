@@ -2,142 +2,186 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HeliacMail · 仪表盘</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeliacMail · 邮箱 AI 助手 - 仪表板</title>
 <style>
-:root{
-  --bg:#0f1115; --panel:#161a22; --panel2:#1b202b; --line:#2a3140;
-  --txt:#e8eaf0; --dim:#9aa3b5; --accent:#4f8cff; --green:#34d399; --red:#f87171;
-  --amber:#fbbf24; --mono:'Cascadia Code','Consolas',monospace;
-}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,'Segoe UI','Microsoft YaHei',sans-serif;min-height:100vh}
-a{color:var(--accent);text-decoration:none}
-.hidden{display:none!important}
-/* 顶栏 */
-.topbar{display:flex;align-items:center;gap:14px;padding:14px 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-.topbar .logo{font-size:18px;font-weight:700}
-.topbar .logo b{color:var(--accent)}
-.topbar .spacer{flex:1}
-.topbar .link{font-size:13px;color:var(--dim);padding:6px 12px;border:1px solid var(--line);border-radius:8px;transition:.15s}
-.topbar .link:hover{color:var(--txt);border-color:var(--accent)}
-/* 统计卡 */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:20px 22px 0}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-.card .label{font-size:12px;color:var(--dim)}
-.card .value{font-size:28px;font-weight:700;margin-top:6px;font-family:var(--mono)}
-.card .sub{font-size:12px;color:var(--dim);margin-top:4px}
-/* 主网格 */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 22px 30px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
-.panel h2{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);display:inline-block}
-.panel h2 .dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
-/* 待办 */
-.todo-item{display:flex;align-items:flex-start;gap:10px;padding:10px 6px;border-bottom:1px solid var(--line)}
-.todo-item:last-child{border-bottom:none}
-.todo-item input[type=checkbox]{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
-.todo-item .body{flex:1;min-width:0}
-.todo-item .title{font-size:14px;word-break:break-word}
-.todo-item .meta{font-size:12px;color:var(--dim);margin-top:3px}
-.todo-item.done .title{text-decoration:line-through;color:var(--dim)}
-.todo-item .del{opacity:0;transition:.15s;color:var(--dim);background:none;border:none;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:6px}
-.todo-item:hover .del{opacity:1}
-.todo-item .del:hover{color:var(--red)}
-/* 最近邮件 */
-.mail-item{padding:10px 6px;border-bottom:1px solid var(--line)}
-.mail-item:last-child{border-bottom:none}
-.mail-item .subj{font-size:14px;word-break:break-word}
-.mail-item .subj .tag{font-size:11px;padding:2px 7px;border-radius:999px;margin-right:8px;vertical-align:1px}
-.mail-item .from{font-size:12px;color:var(--dim);margin-top:4px}
-.mail-item .sum{font-size:13px;color:var(--dim);margin-top:6px;line-height:1.5;border-left:2px solid var(--line);padding-left:10px}
-.tag-urgent{background:rgba(248,113,113,.15);color:var(--red)}
-.tag-important{background:rgba(251,191,36,.15);color:var(--amber)}
-.tag-normal{background:rgba(79,140,255,.15);color:var(--accent)}
-.tag-news{background:rgba(154,163,181,.15);color:var(--dim)}
-.tag-social{background:rgba(52,211,153,.15);color:var(--green)}
-.tag-promo{background:rgba(154,163,181,.15);color:var(--dim)}
-/* 状态条 */
-.statusline{display:flex;gap:10px;flex-wrap:wrap;padding:0 22px 6px;font-size:12px;color:var(--dim)}
-.statusline .err{color:var(--red)}
-.banner{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:var(--red);padding:10px 22px;font-size:13px}
+body{font-family:'Segoe UI',Arial,'Microsoft YaHei',sans-serif;background:#eef2f7;color:#333;padding:20px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:12px;padding:16px 22px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);flex-wrap:wrap;gap:10px}
+h1{font-size:19px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+a.btn,button.btn{display:inline-block;padding:8px 14px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#0f172a;text-decoration:none;font-size:13px;cursor:pointer;font-weight:600}
+a.btn.blue,button.btn.blue{background:#2563eb;border-color:#2563eb;color:#fff}
+button.btn.green{background:#bbf7d0;border-color:#15803d;color:#14532d;font-weight:700}
+button.btn.gray{background:#475569;border-color:#475569;color:#fff}
+button.btn.amber{background:#d97706;border-color:#d97706;color:#fff;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+.stat{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.stat b{display:block;font-size:18px;color:#2f81f7}
+.stat span{font-size:11px;color:#888}
+.green{color:#28a745!important}.orange{color:#e67e22!important}.red{color:#e74c3c!important}.gray{color:#adb5bd!important}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card h3{font-size:15px;color:#555;margin-bottom:10px}
+.item{border-bottom:1px solid #f0f0f0;padding:10px 0;font-size:14px}
+.item:last-child{border-bottom:none}
+.subj{font-weight:600;word-break:break-all}
+.summary{color:#666;margin-top:2px;white-space:pre-wrap;word-break:break-all}
+.meta{color:#999;font-size:12px;margin-top:3px}
+.tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;margin:0 4px 4px 0}
+.tag.cat{background:#eef1f5;color:#555}
+.tag.ai{background:#e7f1ff;color:#1a6dd0}
+.tag.kw{background:#f1f1f1;color:#888}
+.tag.u-hi{background:#fdecea;color:#c0392b}
+.tag.u-md{background:#fef3e2;color:#b9770e}
+.tag.u-lo{background:#eef1f5;color:#888}
+.empty{color:#999;text-align:center;padding:20px;font-size:13px}
+.todo{display:flex;align-items:flex-start;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:14px;gap:8px}
+.todo:last-child{border-bottom:none}
+.todo .t{flex:1}
+.todo small{color:#999;display:block;margin-top:2px;font-size:12px}
+.todo.done .txt{text-decoration:line-through;color:#aaa}
+.check{font-size:17px;cursor:pointer;color:#2f81f7;user-select:none}
+.del{background:none;border:none;color:#ccc;cursor:pointer;font-size:15px}
+.del:hover{color:#dc3545}
+.errline{background:#fdf0f0;color:#a13c3c;border-radius:8px;padding:8px 14px;font-size:13px;margin-bottom:12px;display:none;white-space:pre-wrap}
+.msg{background:#d4edda;color:#155724;border-radius:8px;padding:8px 14px;font-size:13px;margin-bottom:12px;display:none}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="logo">📧 <b>HeliacMail</b> · 仪表盘</div>
-  <div class="spacer"></div>
-  <a class="link" href="/setup">⚙ 设置</a>
-</div>
-<div id="banner" class="banner hidden"></div>
-<div class="statusline" id="statusline"></div>
-<div class="cards" id="cards"></div>
-<div class="grid">
-  <div class="panel">
-    <h2><span class="dot" id="dot-todo"></span> 待办清单 <span style="font-size:12px;color:var(--dim);font-weight:400">(点击勾选完成，自动同步)</span></h2>
-    <div id="todos"><p style="color:var(--dim);font-size:13px">加载中…</p></div>
+<div class="wrap">
+  <div class="top">
+    <h1>📊 HeliacMail · 多邮箱 AI 助手 · 仪表板</h1>
+    <div class="btns">
+      <button class="btn" onclick="refresh()">🔄 刷新</button>
+      <button class="btn green" onclick="syncNow()">📱 同步到手机</button>
+      <button class="btn amber" onclick="pollNow()">⚡ 立即检查</button>
+      <a class="btn blue" href="/setup">⚙️ 设置</a>
+    </div>
   </div>
-  <div class="panel">
-    <h2><span class="dot" id="dot-recent"></span> 最近邮件</h2>
-    <div id="recent"><p style="color:var(--dim);font-size:13px">加载中…</p></div>
+  <div id="msg" class="msg"></div>
+  <div id="errline" class="errline"></div>
+  <div class="grid">
+    <div class="stat"><b id="sAcc">0</b><span>邮箱账户</span></div>
+    <div class="stat"><b id="sState" class="gray">—</b><span>监控状态</span></div>
+    <div class="stat"><b id="sLast">—</b><span>上次检查</span></div>
+    <div class="stat"><b id="sMode" class="gray">—</b><span>分析模式</span></div>
+    <div class="stat"><b id="sNtfy" class="gray">—</b><span>手机推送</span></div>
+    <div class="stat"><b id="sTodo">0</b><span>待办事项</span></div>
+  </div>
+
+  <div class="cols">
+    <!-- 最近邮件简报 -->
+    <div class="card">
+      <h3>📬 最近邮件简报（AI 分析 / 关键词提取）</h3>
+      <div id="recentList"><div class="empty">加载中…</div></div>
+    </div>
+    <!-- 待办列表 -->
+    <div class="card">
+      <h3>📋 待办事项 <span id="todoCnt" class="gray"></span></h3>
+      <div id="todoList"><div class="empty">加载中…</div></div>
+    </div>
   </div>
 </div>
+
 <script>
-const $=s=>document.querySelector(s);
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-const CAT_TAG={urgent:'tag-urgent',important:'tag-important',normal:'tag-normal',news:'tag-news',social:'tag-social',promo:'tag-promo',finance:'tag-important',other:'tag-normal'};
-const CAT_NAME={urgent:'紧急',important:'重要',normal:'普通',news:'资讯',social:'社交',promo:'促销',finance:'财务',other:'其他'};
-async function api(path,opt){const r=await fetch(path,opt);return r.json();}
-async function refresh(){
-  const [st,todos,recent]=await Promise.all([
-    api('/api/status'),api('/api/todos'),api('/api/recent')
-  ]);
-  // 状态行
-  const parts=[];
-  parts.push(`运行中：${st.running?'<b style="color:var(--green)">是</b>':'<b style="color:var(--red)">否</b>'}`);
-  parts.push(`账户：${st.account_count}`);
-  parts.push(`轮询间隔：${st.poll_interval}s`);
-  if(st.last_cycle)parts.push(`上次检查：${esc(st.last_cycle)}`);
-  if(st.ntfy_topic)parts.push(`推送主题：<b>${esc(st.ntfy_topic)}</b>`);
-  if(st.ai_enabled)parts.push(`AI：<b style="color:var(--green)">开</b>(${st.ai_providers})`);
-  if(st.sync_enabled)parts.push(`同步：${esc(st.sync_backend)}`);
-  $('#statusline').innerHTML=parts.join('&nbsp;·&nbsp;');
-  const banner=$('#banner');
-  if(st.errors&&st.errors.length){banner.textContent='⚠ '+st.errors.join('；');banner.classList.remove('hidden');}
-  else banner.classList.add('hidden');
-  // 统计卡
-  const open=todos.filter(t=>!t.done).length;
-  $('#cards').innerHTML=[
-    ['邮箱账户',st.account_count,''],
-    ['待办',open,'未完成'],
-    ['今日新邮件',recent.filter(i=>{const d=new Date(i.ts);const n=new Date();return d.toDateString()===n.toDateString();}).length,'今天'],
-    ['最近处理',recent.length,'条'],
-  ].map(([l,v,s])=>`<div class="card"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join('');
-  // 待办列表
-  $('#dot-todo').classList.toggle('on',open>0);
-  $('#todos').innerHTML=todos.length?todos.map(t=>`
-    <div class="todo-item ${t.done?'done':''}">
-      <input type="checkbox" ${t.done?'checked':''} onchange="toggle('${esc(t.id)}')">
-      <div class="body">
-        <div class="title">${esc(t.title)}</div>
-        <div class="meta">${esc(t.category||'')}${t.mail_from?' · '+esc(t.mail_from):''}${t.ts?' · '+esc(t.ts):''}</div>
-      </div>
-      <button class="del" onclick="del('${esc(t.id)}')">✕</button>
-    </div>`).join('')
-    :'<p style="color:var(--dim);font-size:13px">暂无待办，有符合条件的邮件会自动生成。</p>';
-  // 最近邮件
-  $('#dot-recent').classList.add('on');
-  $('#recent').innerHTML=recent.length?recent.map(i=>`
-    <div class="mail-item">
-      <div class="subj"><span class="tag ${CAT_TAG[i.category]||'tag-normal'}">${CAT_NAME[i.category]||'其他'}</span>${esc(i.subject)}</div>
-      <div class="from">${esc(i.mail_from||'')} · ${esc(i.ts||'')}</div>
-      ${i.summary?`<div class="sum">${esc(i.summary)}</div>`:''}
-    </div>`).join('')
-    :'<p style="color:var(--dim);font-size:13px">暂无邮件记录。</p>';
+// —— 访问令牌（config.yaml 的 server.auth_token 配置后启用）——
+var AUTH_KEY='mailai_auth_token';
+function _authToken(){try{return localStorage.getItem(AUTH_KEY)||'';}catch(e){return '';}}
+(function(){
+  var _f=window.fetch;
+  window.fetch=function(url,opt){
+    opt=opt||{};
+    var tok=_authToken();
+    if(tok && String(url).indexOf('/api/')===0){
+      opt.headers=opt.headers||{};
+      try{
+        if(typeof Headers!=='undefined' && opt.headers instanceof Headers){opt.headers.set('X-Auth-Token',tok);}
+        else{opt.headers['X-Auth-Token']=tok;}
+      }catch(e){}
+    }
+    return _f(url,opt).then(function(r){
+      if(r.status===401 && String(url).indexOf('/api/')===0){
+        var t=prompt('访问被拒绝：请输入访问令牌（config.yaml 的 server.auth_token），留空取消。','');
+        if(t!==null&&t.trim()){try{localStorage.setItem(AUTH_KEY,t.trim());}catch(e){} location.reload();}
+      }
+      return r;
+    });
+  };
+})();
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function post(path,body){return fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).catch(function(e){return {success:false,error:String(e)};});}
+function flash(t){var m=$('msg');m.style.display='block';m.textContent=t;setTimeout(function(){m.style.display='none';},5000);}
+function fmtTime(s){return s?s.replace('T',' ').slice(0,19):'';}
+
+function refresh(){
+  fetch('/api/status').then(function(r){return r.json();}).then(function(d){
+    $('sAcc').textContent=d.account_count||0;
+    var st=$('sState');
+    if(d.checking){st.textContent='检查中…';st.className='orange';}
+    else if(d.running){st.textContent='运行中';st.className='green';}
+    else{st.textContent='已停止';st.className='red';}
+    $('sLast').textContent=d.last_cycle||'—';
+    var m=$('sMode');
+    if(d.ai_enabled){m.textContent='AI + 关键词';m.className='green';}
+    else{m.textContent='仅关键词';m.className='gray';}
+    var n=$('sNtfy');
+    if(d.ntfy_topic){n.textContent='已开启';n.className='green';}
+    else{n.textContent='未配置';n.className='gray';}
+    var e=$('errline');
+    if(d.errors&&d.errors.length){e.style.display='block';e.textContent=d.errors.join('\n');}
+    else{e.style.display='none';}
+  });
+  fetch('/api/recent').then(function(r){return r.json();}).then(function(d){renderRecent(d.items||[]);});
+  fetch('/api/todos').then(function(r){return r.json();}).then(function(d){renderTodos(d.todos||[]);});
 }
-async function toggle(id){await api('/api/todo/'+id+'/toggle',{method:'POST'});refresh();}
-async function del(id){await api('/api/todo/'+id+'/del',{method:'POST'});refresh();}
+function catTag(it){
+  var html='';
+  if(it.category)html+='<span class="tag cat">'+esc(it.category)+'</span>';
+  var u=it.urgency;
+  if(u==='高')html+='<span class="tag u-hi">紧急</span>';
+  else if(u==='低')html+='<span class="tag u-lo">低</span>';
+  html+='<span class="tag '+(it.mode==='ai'?'ai':'kw')+'">'+(it.mode==='ai'?'AI':'关键词')+'</span>';
+  return html;
+}
+function renderRecent(items){
+  var list=$('recentList');
+  if(!items.length){list.innerHTML='<div class="empty">暂无处理记录。保存邮箱账户后开始监控，新邮件会自动出现在这里。</div>';return;}
+  list.innerHTML=items.map(function(it){
+    var pts=(it.key_points||[]).map(function(p){return '• '+p;}).join('\n');
+    var url=it.url||'';
+    var open=url?'<br><a href="'+esc(url)+'" target="_blank" rel="noopener">🔗 打开链接</a>':'';
+    var mailT=fmtTime(it.mail_time), procT=fmtTime(it.time);
+    var when=mailT ? '📅 邮件时间：'+mailT+(procT?'　<span class="gray">（'+procT+' 处理）</span>':'') : '🕐 处理时间：'+procT;
+    return '<div class="item">'+catTag(it)+
+      '<div class="subj">'+esc(it.subject||'(无主题)')+'</div>'+
+      '<div class="summary">'+esc(it.summary||'')+(pts?'\n'+esc(pts):'')+'</div>'+
+      '<div class="meta">📧 '+esc(it.source_email||'')+'　'+when+open+'</div></div>';
+  }).join('');
+}
+function renderTodos(todos){
+  $('todoCnt').textContent='('+todos.filter(function(t){return !t.done;}).length+' 未完成)';
+  var list=$('todoList');
+  if(!todos.length){list.innerHTML='<div class="empty">暂无待办。邮件中含关键词/AI 识别的行动项会自动出现。</div>';return;}
+  list.innerHTML=todos.map(function(t){
+    var box=t.done?'☑':'☐';
+    var tags=(t.category?'<span class="tag cat">'+esc(t.category)+'</span>':'')+(t.ai?'<span class="tag ai">AI</span>':'');
+    return '<div class="todo'+(t.done?' done':'')+'">'+
+      '<span class="check" onclick="toggle(\''+t.id+'\')">'+box+'</span>'+
+      '<div class="t"><span class="txt">'+esc(t.text)+'</span>'+tags+
+      '<small>📧 '+esc(t.source_email||'')+'　📨 '+esc(t.source_subject||'').slice(0,60)+
+      '　🕐 '+fmtTime(t.created_at)+'</small></div>'+
+      '<button class="del" onclick="del(\''+t.id+'\')">✕</button></div>';
+  }).join('');
+}
+function toggle(id){post('/api/todo/'+id+'/toggle',{}).then(function(d){if(!d.success&&d.error)flash(d.error);refresh();});}
+function del(id){post('/api/todo/'+id+'/del',{}).then(function(d){if(!d.success&&d.error)flash(d.error);refresh();});}
+function syncNow(){post('/api/todo/sync',{}).then(function(d){flash(d.message||d.error);});}
+function pollNow(){post('/api/poll',{}).then(function(d){flash('已触发立即检查，几秒内完成');setTimeout(refresh,3000);});}
+
 refresh();
 setInterval(refresh,10000);
 </script>
