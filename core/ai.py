@@ -352,3 +352,6 @@ def quick_test(ai_cfg: dict, log=None) -> Tuple[bool, str]:
     if a is None:
         return False, err
     return True, a.to_dict()
+
+
+
